@@ -4,97 +4,100 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>AEGIS - Autonomous Trading Agent</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-:root{--ink:#eaf1f7;--mut:#92a0b3;--glass:rgba(255,255,255,.04);--line:rgba(255,255,255,.08);--ok:#4ade80;--warn:#fbbf24;--bad:#fb7185;--a1:#7c5cff;--a2:#22d3ee;--a3:#a3e635;--gold:#d4af37}
-body{font-family:"Inter",system-ui,Segoe UI,Roboto,sans-serif;color:var(--ink);background:#05060a;min-height:100vh;overflow-x:hidden;padding:clamp(1rem,4vw,2.5rem)}
-.aurora{position:fixed;inset:0;z-index:-2;background:radial-gradient(700px circle at 12vw 8vh,rgba(124,92,255,.35),transparent),radial-gradient(600px circle at 88vw 12vh,rgba(34,211,238,.28),transparent),radial-gradient(800px circle at 60vw 100vh,rgba(163,230,53,.18),transparent);filter:blur(8px);animation:drift 18s ease-in-out infinite alternate}
-@keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(0,-30px,0) scale(1.08)}}
-.grain{position:fixed;inset:0;z-index:-1;opacity:.5;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:3px 3px;pointer-events:none}
-.watermark{position:fixed;inset:0;margin:auto;z-index:-1;opacity:.06;pointer-events:none}
-.wrap{max-width:1100px;margin:0 auto}
-.top{display:flex;align-items:center;gap:1rem;margin-bottom:.4rem}
-.logo{width:3.2rem;height:3.2rem;border-radius:1rem;background:linear-gradient(135deg,var(--a1),var(--a2));display:grid;place-items:center;font-weight:800;font-size:1.3rem;color:#05060a;box-shadow:0 0 40px rgba(124,92,255,.55)}
-.brand{font-size:clamp(1.6rem,5vw,2.4rem);font-weight:800;letter-spacing:-.02em;background:linear-gradient(90deg,#fff,var(--a2),var(--a1),#fff);background-size:300px auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
-@keyframes shine{from{background-position:0}to{background-position:300px}}
-.cel-head{flex:none;filter:drop-shadow(0 0 8px rgba(212,175,55,.5))}
-.live{margin-left:auto;display:flex;align-items:center;gap:.5rem;font-size:.8rem;color:var(--mut);border:1px solid var(--line);padding:.4rem .8rem;border-radius:999px;background:var(--glass);backdrop-filter:blur(12px)}
-.dot{width:.55rem;height:.55rem;border-radius:50px;background:var(--ok);animation:pulse 1.8s infinite}
-@keyframes pulse{from{box-shadow:0 0 0 0 rgba(74,222,128,.6)}to{box-shadow:0 0 0 14px rgba(74,222,128,0)}}
-.sub{color:var(--mut);font-size:.95rem;margin-bottom:1rem}
-.celtic-divider{display:flex;justify-content:center;margin:0 0 1.4rem;filter:drop-shadow(0 0 6px rgba(212,175,55,.45))}
-.bento{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
-.card{position:relative;background:var(--glass);border:1px solid var(--line);border-radius:1.5rem;padding:1.4rem;backdrop-filter:blur(16px);box-shadow:0 8px 40px rgba(0,0,0,.35);animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
-.hero{grid-column:span 2;grid-row:span 2;display:flex;flex-direction:column;gap:.5rem;overflow:hidden}
-.hcorner{position:absolute;top:.8rem;right:.8rem;opacity:.4;filter:drop-shadow(0 0 6px rgba(212,175,55,.4))}
-.k{color:var(--mut);font-size:.72rem;text-transform:uppercase;letter-spacing:.18em}
-.v{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.mono{font-family:"JetBrains Mono",ui-monospace,monospace}
-.herotoken{font-size:clamp(2.4rem,8vw,4rem);font-weight:800;background:linear-gradient(120deg,var(--a3),var(--a2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.rowline{display:flex;justify-content:space-between;align-items:center;padding:.55rem 0;border-top:1px solid var(--line)}
-.pill{padding:.3rem .8rem;border-radius:999px;font-size:.8rem;font-weight:700;letter-spacing:.04em}
-.approve{background:rgba(74,222,128,.14);color:var(--ok);border:1px solid rgba(74,222,128,.35)}
-.resize{background:rgba(251,191,36,.14);color:var(--warn);border:1px solid rgba(251,191,36,.35)}
-.veto{background:rgba(251,113,133,.14);color:var(--bad);border:1px solid rgba(251,113,133,.35)}
-.side{font-weight:800;letter-spacing:.05em}
-.buy{color:var(--ok)}
-.sell{color:var(--bad)}
-.span2{grid-column:span 2}
-.foot{color:var(--mut);font-size:.8rem;text-align:center;margin-top:1.2rem}
-.foot a{color:var(--a2);text-decoration:none}
-@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-@media (max-width:760px){.bento{grid-template-columns:repeat(2,1fr)}.hero{grid-column:span 2;grid-row:auto}.span2{grid-column:span 2}}
-</style>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="aurora"></div>
-<div class="grain"></div>
-<svg class="watermark" width="520" height="520" viewBox="0 0 100 100" fill="none" stroke="#d4af37" stroke-width="1"><ellipse cx="50" cy="36" rx="17" ry="28"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(120 50 52)"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(240 50 52)"/><circle cx="50" cy="52" r="34"/></svg>
-<div class="wrap">
-<div class="top">
-<div class="logo">AE</div>
-<div class="brand">AEGIS</div>
-<svg class="cel-head" width="40" height="40" viewBox="0 0 100 100" fill="none" stroke="#d4af37" stroke-width="4" stroke-linecap="round"><ellipse cx="50" cy="36" rx="17" ry="28"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(120 50 52)"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(240 50 52)"/></svg>
-<div class="live"><span class="dot"></span>LIVE ON BSC</div>
+<div class="bg-mesh"></div>
+<div class="bg-grid"></div>
+<div class="bg-orb orb1"></div>
+<div class="bg-orb orb2"></div>
+<svg class="watermark" viewBox="0 0 100 100" fill="none" stroke="#9fb6dd" stroke-width="1"><ellipse cx="50" cy="36" rx="17" ry="28"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(120 50 52)"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(240 50 52)"/><circle cx="50" cy="52" r="34"/></svg>
+<svg width="0" height="0"><defs>
+<linearGradient id="sg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7c5cff"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+<linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="transparent"/></linearGradient>
+</defs></svg>
+<div class="app">
+<aside class="sidebar">
+<div class="brand"><div class="logo">AE</div><div class="brand-name">AEGIS</div></div>
+<nav class="nav" id="nav">
+<button class="nav-item active" data-tab="overview" data-title="Overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Overview</button>
+<button class="nav-item" data-tab="positions" data-title="Positions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M2 16l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>Positions</button>
+<button class="nav-item" data-tab="strategy" data-title="Strategy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>Strategy</button>
+<button class="nav-item" data-tab="risk" data-title="Risk Sentinel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v5c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-3Z"/></svg>Risk</button>
+<button class="nav-item" data-tab="backtest" data-title="Backtest"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="12"/><line x1="10" y1="21" x2="10" y2="4"/><line x1="16" y1="21" x2="16" y2="9"/></svg>Backtest</button>
+<button class="nav-item" data-tab="system" data-title="System"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="6" rx="2"/><rect x="3" y="14" width="18" height="6" rx="2"/></svg>System</button>
+</nav>
+<div class="side-foot"><div class="status-dot"><span class="dot"></span> LIVE - BSC</div><div>Mode - Autonomous</div></div>
+</aside>
+<main class="main">
+<header class="topbar">
+<div class="page-title" id="pageTitle">Overview</div>
+<div class="topbar-right">
+<div class="ticker">Equity <b id="tk-equity">-</b></div>
+<div class="ticker">PnL <b id="tk-pnl" class="pos">-</b></div>
+<div class="live-pill"><span class="dot"></span> Live</div>
 </div>
-<div class="sub">Autonomous Execution and Guarded Intelligence System - dual-loop trading agent for BNB Hack Track 1</div>
-<div class="celtic-divider"><svg width="240" height="46" viewBox="0 0 240 46" fill="none" stroke="#d4af37" stroke-width="2.4" stroke-linecap="round"><path d="M8 23 H78" opacity=".45"/><ellipse cx="120" cy="14" rx="11" ry="18"/><ellipse cx="120" cy="14" rx="11" ry="18" transform="rotate(120 120 24)"/><ellipse cx="120" cy="14" rx="11" ry="18" transform="rotate(240 120 24)"/><path d="M162 23 H232" opacity=".45"/></svg></div>
-<div class="bento">
-<div class="card hero">
-<svg class="hcorner" width="56" height="56" viewBox="0 0 100 100" fill="none" stroke="#d4af37" stroke-width="3"><ellipse cx="50" cy="36" rx="17" ry="28"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(120 50 52)"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(240 50 52)"/></svg>
+</header>
+<div class="cel-divider"><svg width="240" height="42" viewBox="0 0 240 42" fill="none" stroke="#9fb6dd" stroke-width="2.2" stroke-linecap="round"><path d="M8 21 H80" opacity=".4"/><ellipse cx="120" cy="12" rx="10" ry="16"/><ellipse cx="120" cy="12" rx="10" ry="16" transform="rotate(120 120 21)"/><ellipse cx="120" cy="12" rx="10" ry="16" transform="rotate(240 120 21)"/><path d="M160 21 H232" opacity=".4"/></svg></div>
+<section class="tab" id="tab-overview">
+<div class="grid kpis" id="kpis"></div>
+<div class="grid cols-2" style="margin-top:1rem">
+<div class="card tilt hero">
+<svg class="hcorner" viewBox="0 0 100 100" fill="none" stroke="#9fb6dd" stroke-width="3"><ellipse cx="50" cy="36" rx="17" ry="28"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(120 50 52)"/><ellipse cx="50" cy="36" rx="17" ry="28" transform="rotate(240 50 52)"/></svg>
+<div class="depth">
 <div class="k">Latest Decision</div>
-<div class="herotoken" id="token">CAKE</div>
-<div class="rowline"><span class="k">Action</span><span class="side buy" id="side">BUY</span></div>
-<div class="rowline"><span class="k">Proposed size</span><span class="mono" id="size">8 pct</span></div>
-<div class="rowline"><span class="k">Sentinel verdict</span><span class="pill approve" id="verdict">APPROVE</span></div>
-<div class="rowline"><span class="k">Reason</span><span id="reason">Within risk limits</span></div>
+<div class="token" id="dToken">-</div>
+<div class="row"><span class="k">Action</span><span id="dSide" class="buy">-</span></div>
+<div class="row"><span class="k">Proposed size</span><span class="mono" id="dSize">-</span></div>
+<div class="row"><span class="k">Confidence</span><span class="mono" id="dConf">-</span></div>
+<div class="row"><span class="k">Sentinel verdict</span><span class="pill approve" id="dVerdict">-</span></div>
+<div class="row"><span class="k">Reason</span><span id="dReason">-</span></div>
 </div>
-<div class="card"><div class="k">Equity</div><div class="v mono" id="equity">0</div></div>
-<div class="card"><div class="k">Drawdown</div><div class="v mono" id="dd">0</div></div>
-<div class="card"><div class="k">Trades Today</div><div class="v mono" id="trades">0</div></div>
-<div class="card"><div class="k">Regime</div><div class="v" id="regime">-</div></div>
-<div class="card span2"><div class="k">Risk Sentinel</div><div class="v">Reflex veto every block</div><div class="sub" style="margin:.4rem 0 0">Max-drawdown gate, vol-targeting, slippage and allowlist guards - deterministic, sub-second.</div></div>
 </div>
-<div class="celtic-divider" style="margin:1.6rem 0 .6rem"><svg width="180" height="40" viewBox="0 0 180 40" fill="none" stroke="#d4af37" stroke-width="2.2" stroke-linecap="round"><path d="M8 20 H58" opacity=".4"/><ellipse cx="90" cy="12" rx="9" ry="15"/><ellipse cx="90" cy="12" rx="9" ry="15" transform="rotate(120 90 21)"/><ellipse cx="90" cy="12" rx="9" ry="15" transform="rotate(240 90 21)"/><path d="M122 20 H172" opacity=".4"/></svg></div>
-<div class="foot">Slow Cognition (LLM) + Fast Reflex (deterministic veto) - on-chain verifiable - <a href="https://github.com/Artem1981777/AEGIS">github.com/Artem1981777/AEGIS</a></div>
+<div class="card"><h3>Equity Curve</h3><div id="spark"></div></div>
 </div>
-<script>
-function animateNum(el,to){if(typeof to!=="number"){el.textContent=to;return;}let cur=0;const step=to/40;const id=setInterval(()=>{cur+=step;if(cur>=to){cur=to;clearInterval(id);}el.textContent=Math.round(cur).toLocaleString();},18);}
-async function load(){
-let s={equity:1000,dd:"4.2 pct",trades:3,regime:"TREND",token:"CAKE",side:"BUY",size:"8 pct",verdict:"APPROVE",reason:"Within risk limits"};
-try{const r=await fetch("state.json",{cache:"no-store"});if(r.ok){s=Object.assign(s,await r.json());}}catch(e){}
-animateNum(document.getElementById("equity"),s.equity);
-document.getElementById("dd").textContent=s.dd;
-animateNum(document.getElementById("trades"),s.trades);
-document.getElementById("regime").textContent=s.regime;
-document.getElementById("token").textContent=s.token;
-document.getElementById("size").textContent=s.size;
-document.getElementById("reason").textContent=s.reason;
-const sd=document.getElementById("side");sd.textContent=s.side;sd.className="side "+(s.side==="BUY"?"buy":"sell");
-const v=document.getElementById("verdict");v.textContent=s.verdict;
-v.className="pill "+({APPROVE:"approve",RESIZE:"resize",VETO:"veto",KILL:"veto"}[s.verdict]||"approve");
-}
-load();
-</script>
+<div class="grid cols-2b" style="margin-top:1rem">
+<div class="card"><h3>Allocation</h3><div class="alloc" id="alloc"></div></div>
+<div class="card"><h3>Risk Gauges</h3><div class="gauges" id="gauges"></div></div>
+</div>
+</section>
+<section class="tab hidden" id="tab-positions">
+<div class="card"><h3>Open Positions</h3>
+<table class="tbl"><thead><tr><th>Token</th><th>Side</th><th>Size</th><th>Entry</th><th>Mark</th><th>PnL</th></tr></thead><tbody id="positionsBody"></tbody></table>
+</div>
+<div class="card" style="margin-top:1rem"><h3>Recent Trades</h3><div class="feed" id="trades"></div></div>
+</section>
+<section class="tab hidden" id="tab-strategy">
+<div class="grid cols-2">
+<div class="card"><h3>Market Regime</h3><div class="token" id="regimeVal" style="font-size:2rem">-</div><div class="k" style="margin:.7rem 0 .2rem">Signals</div><div id="signals"></div></div>
+<div class="card"><h3>Agent Reasoning</h3><div class="log" id="reasoning"></div></div>
+</div>
+</section>
+<section class="tab hidden" id="tab-risk">
+<div class="grid cols-2">
+<div class="card"><h3>Risk Constitution</h3>
+<div class="row"><span class="k">Max drawdown gate</span><span class="mono">25%</span></div>
+<div class="row"><span class="k">Per-trade max</span><span class="mono">15%</span></div>
+<div class="row"><span class="k">Daily trade limit</span><span class="mono">20</span></div>
+<div class="row"><span class="k">Max slippage</span><span class="mono">80 bps</span></div>
+<div class="row"><span class="k">Vol target</span><span class="mono">40% ann</span></div>
+<div class="row"><span class="k">Allowlist</span><span class="mono">149 tokens</span></div>
+</div>
+<div class="card"><h3>Live Risk</h3><div class="gauges" id="gauges2"></div>
+<div class="row" style="margin-top:.6rem"><span class="k">Kill-switch</span><span class="pill approve">ARMED - OK</span></div>
+</div>
+</div>
+</section>
+<section class="tab hidden" id="tab-backtest">
+<div class="grid kpis" id="btMetrics"></div>
+<div class="card" style="margin-top:1rem"><h3>Backtest Equity</h3><div id="btSpark"></div></div>
+</section>
+<section class="tab hidden" id="tab-system">
+<div class="card"><h3>Infrastructure Status</h3><div class="infra" id="infra"></div></div>
+<div class="card" style="margin-top:1rem"><h3>Recent Events</h3><div class="feed" id="events"></div></div>
+</section>
+</main>
+</div>
+<script src="app.js"></script>
 </body>
 </html>
