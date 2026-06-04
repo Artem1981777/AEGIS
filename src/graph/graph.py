@@ -6,6 +6,7 @@ import os
 from src.agents.regime import classify_regime, MarketSignals
 from src.agents.strategy import propose_trade
 from src.risk.sentinel import RiskConfig, RiskSentinel, PortfolioState, Verdict
+from src.config import SETTINGS
 
 
 REGIME_LABELS = {"risk_off": "RISK-OFF", "trend": "TREND", "range": "RANGE"}
@@ -94,7 +95,7 @@ def write_state(state, path=None):
 def run_cycle(signals, token, portfolio, cfg=None, publish=True,
               start_equity=None, equity_series=None, positions=None, trades=None):
     if cfg is None:
-        cfg = RiskConfig(allowlist=frozenset({token}))
+        cfg = SETTINGS.risk_config()
     regime = classify_regime(signals)
     proposal = propose_trade(regime, token, signals.volatility)
     verdict, size, reason = RiskSentinel(cfg).review(proposal, portfolio)
