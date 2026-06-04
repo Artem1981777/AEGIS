@@ -1,0 +1,45 @@
+{
+  "equity": 10250.0,
+  "drawdown": 2.4,
+  "tradesToday": 3,
+  "regime": "TREND",
+  "decision": {
+    "token": "CAKE",
+    "side": "BUY",
+    "size": 8.51,
+    "confidence": 73,
+    "verdict": "RESIZE",
+    "reason": "vol-targeted resize"
+  },
+  "risk": {
+    "drawdownUsed": 9.5,
+    "exposure": 8.5,
+    "dailyTradesUsed": 15.0
+  },
+  "signals": [
+    {
+      "name": "Fear & Greed",
+      "value": "62"
+    },
+    {
+      "name": "Trend strength",
+      "value": "+0.58"
+    },
+    {
+      "name": "Volatility (ann)",
+      "value": "47%"
+    },
+    {
+      "name": "Funding rate",
+      "value": "+0.012%"
+    }
+  ],
+  "reasoning": [
+    "Regime=TREND (F&G 62, trend +0.58).",
+    "Strategy proposes BUY CAKE at base 10.0%.",
+    "Sentinel RESIZE: vol-targeted resize.",
+    "Final size 8.51% of equity."
+  ],
+  "pnlValue": 250.0,
+  "pnlPct": 2.5
+}
