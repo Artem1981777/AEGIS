@@ -1,31 +1,51 @@
-# 🛡️ AEGIS — Autonomous Execution & Guarded Intelligence System
+# AEGIS - Autonomous Execution and Guarded Intelligence System
 
-Non-custodial AI trading agent on BNB Chain that thinks like a quant,
-executes like a machine, and survives like a guardian.
+Risk-gated AI trading agent on BNB Chain. Built for BNB Hack: AI Trading Agent Edition (Track 1).
 
-Built for **BNB Hack: AI Trading Agent Edition** (CoinMarketCap × Trust Wallet × BNB Chain).
+## Thesis
+The edge is not the model - it is the guardrail. A drawdown breach disqualifies an agent, so AEGIS treats risk as a deterministic, first-class citizen with veto/kill power over every trade.
 
-## TL;DR
-An LLM strategist proposes trades; a deterministic Risk Sentinel can veto them.
-The agent earns without blowing up — surviving the drawdown gate that
-disqualifies greedy momentum bots.
+## Architecture
+Dual-loop design:
+- Slow loop (cognition): perception -> regime -> strategy proposal.
+- Fast loop (guardrail): Risk Sentinel enforces the Risk Constitution and can RESIZE / VETO / KILL.
 
-## Dual-loop design
-- Slow loop (15–60 min): LLM reads market, classifies regime, proposes a plan.
-- Fast loop (every block): deterministic Risk Sentinel enforces risk, veto, kill-switch.
+Pipeline: CMC data -> perception -> regime -> strategy -> Risk Sentinel -> executor/DEX -> BNB Chain.
+Orchestrated as a LangGraph supervisor-veto graph (src/graph/langgraph_app.py).
 
-Plus: on-chain verifiable reasoning, and metered cognition via x402.
+## On-chain (BNB testnet, chain 97)
+- ERC-8004 identity: agentId 1282 (gas-free via MegaFuel)
+- Wallet: 0xaFe4Ea6E832F68c353237EBa2B03E1dDA0992297
+- Proven txs: native transfer, WBNB wrap/unwrap, Risk-Sentinel-gated execution
 
-## Stack
-LangGraph · CoinMarketCap AI Agent Hub (MCP+x402) · Trust Wallet Agent Kit · BNB AI Agent SDK · pgvector/Chroma · React dashboard
+## Layout
+- src/agents - perception, regime, strategy, execution
+- src/risk/sentinel.py - Risk Sentinel (veto/kill)
+- src/graph - run_cycle + LangGraph app
+- src/chain - wallet, executor, dex, trader, register (ERC-8004)
+- src/tools - cmc, twak
+- src/backtest - backtest + publish
+- dashboard - Vercel dashboard + wallet connect
+- tests - unit tests
 
-## Quickstart
-    cp .env.example .env
+## Setup
     pip install -r requirements.txt
-    python -m src.main --mode paper
+    cp .env.example .env
+    python -m src.graph.langgraph_app
+
+## Run
+- Graph cycle: python -m src.graph.langgraph_app [--live]
+- Trader: python -m src.chain.trader [--live]
+- DEX: python -m src.chain.dex [--unwrap] [--live]
+- Register: python -m src.chain.register [--dry]
+- Backtest: python -m src.backtest.backtest
+- Tests: PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 python -m pytest -q
 
 ## Risk Constitution
-Drawdown circuit breaker · vol-targeted sizing · per-trade & daily limits · 149-token allowlist · self-custody (keys never leave TWAK).
+max_drawdown 25% (stricter than the ~30% disqualification line), per-trade max 15%, daily limit 20, min 1 trade/day, slippage cap 80 bps, vol target 40%.
+
+## Dashboard
+https://aegis-delta-nine.vercel.app
 
 ## License
 MIT
