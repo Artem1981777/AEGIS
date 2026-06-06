@@ -38,7 +38,7 @@ def request(method, path, params=None, timeout=30):
     date = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     sig = _sign(method, path, query, nonce, date)
     url = BASE + path + (("?" + query) if query else "")
-    headers = {"X-TW-Credential": ACCESS_ID, "X-TW-Nonce": nonce, "X-TW-Date": date, "Authorization": sig}
+    headers = {"X-TW-Credential": ACCESS_ID, "X-TW-Nonce": nonce, "X-TW-Date": date, "Authorization": sig, "User-Agent": "Mozilla/5.0 (Linux; Android 14) AEGIS/0.1", "Accept": "application/json"}
     r = requests.request(method, url, headers=headers, timeout=timeout)
     return r.status_code, r.text
 
@@ -61,7 +61,11 @@ def main():
         print("Missing TWAK_ACCESS_ID / TWAK_HMAC_SECRET in .env.")
         sys.exit(1)
     q = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else "BNB"
-    code, body = search_assets(q, 5)
+    try:
+        code, body = search_assets(q, 5)
+    except Exception as e:
+        print("network error:", e)
+        sys.exit(2)
     print("HTTP", code)
     print(body[:1500])
     sys.exit(0 if code == 200 else 1)
