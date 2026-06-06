@@ -7,6 +7,7 @@ from src.agents.regime import classify_regime, MarketSignals
 from src.agents.strategy import propose_trade
 from src.risk.sentinel import RiskConfig, RiskSentinel, PortfolioState, Verdict
 from src.config import SETTINGS
+from src.tools import cmc
 
 
 REGIME_LABELS = {"risk_off": "RISK-OFF", "trend": "TREND", "range": "RANGE"}
@@ -96,6 +97,8 @@ def run_cycle(signals, token, portfolio, cfg=None, publish=True,
               start_equity=None, equity_series=None, positions=None, trades=None):
     if cfg is None:
         cfg = SETTINGS.risk_config()
+    if signals is None:
+        signals = resolve_signals(token)
     regime = classify_regime(signals)
     proposal = propose_trade(regime, token, signals.volatility)
     verdict, size, reason = RiskSentinel(cfg).review(proposal, portfolio)
@@ -126,3 +129,18 @@ if __name__ == "__main__":
     print("side    :", out["side"], "->", out["final_size_pct"], "%")
     print("verdict :", out["verdict"], "-", out["reason"])
     print("wrote dashboard/state.json")
+
+
+def _synthetic_signals():
+    return MarketSignals(50.0, 0.0, 0.40)
+
+
+def resolve_signals(token, fallback=None):
+    sig = None
+    try:
+        sig = cmc.live_signals(token)
+    except Exception:
+        sig = None
+    if sig is not None:
+        return sig
+    return fallback if fallback is not None else _synthetic_signals()
