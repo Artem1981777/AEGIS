@@ -1,73 +1,70 @@
 # src/tools/twak.py
-# Thin wrapper around the official Trust Wallet Agent Kit (TWAK) CLI: @trustwallet/cli.
-# Auth: Access ID + HMAC-SHA256 secret (twak init, or TWAK_ACCESS_ID / TWAK_HMAC_SECRET env).
-import os, shutil, subprocess, sys
+# Direct HMAC-SHA256 HTTP client for the Trust Wallet API (TWAK).
+# Termux-friendly: pure Python, no Node or keyring needed.
+# Sign: METHOD + PATH + QUERY + ACCESS_ID + NONCE + DATE -> HMAC-SHA256 -> base64.
+import os, sys, hmac, hashlib, base64, uuid
+from datetime import datetime, timezone
+from urllib.parse import quote
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
 
-def _base():
-    if shutil.which("twak"):
-        return ["twak"]
-    return ["npx", "--yes", "@trustwallet/cli"]
+BASE = os.getenv("TWAK_BASE_URL", "https://tws.trustwallet.com")
+ACCESS_ID = os.getenv("TWAK_ACCESS_ID", "")
+SECRET = os.getenv("TWAK_HMAC_SECRET", "")
 
 
-def _env():
-    env = dict(os.environ)
-    aid = os.getenv("TWAK_ACCESS_ID")
-    sec = os.getenv("TWAK_HMAC_SECRET")
-    if aid:
-        env["TWAK_ACCESS_ID"] = aid
-    if sec:
-        env["TWAK_HMAC_SECRET"] = sec
-    return env
+def _qs(params):
+    if not params:
+        return ""
+    parts = []
+    for k, v in params.items():
+        parts.append(str(k) + "=" + quote(str(v), safe=""))
+    return "&".join(parts)
 
 
-def cli(*args, timeout=120):
-    cmd = _base() + list(args)
-    print("[twak] $", " ".join(cmd))
-    proc = subprocess.run(cmd, capture_output=True, text=True, env=_env(), timeout=timeout)
-    out = (proc.stdout or "") + (proc.stderr or "")
-    return proc.returncode, out.strip()
+def _sign(method, path, query, nonce, date):
+    msg = method + path + query + ACCESS_ID + nonce + date
+    digest = hmac.new(SECRET.encode(), msg.encode(), hashlib.sha256).digest()
+    return base64.b64encode(digest).decode()
 
 
-def auth_status():
-    return cli("auth", "status")
+def request(method, path, params=None, timeout=30):
+    method = method.upper()
+    query = _qs(params)
+    nonce = uuid.uuid4().hex
+    date = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    sig = _sign(method, path, query, nonce, date)
+    url = BASE + path + (("?" + query) if query else "")
+    headers = {"X-TW-Credential": ACCESS_ID, "X-TW-Nonce": nonce, "X-TW-Date": date, "Authorization": sig}
+    r = requests.request(method, url, headers=headers, timeout=timeout)
+    return r.status_code, r.text
 
 
-def price(symbol="BNB"):
-    return cli("price", symbol, "--json")
-
-
-def compete_register(extra=None):
-    args = ["compete", "register"]
-    if extra:
-        args += list(extra)
-    return cli(*args)
+def search_assets(query="BNB", limit=5):
+    return request("GET", "/v1/search/assets", {"query": query, "limit": limit})
 
 
 def have_creds():
-    return bool(os.getenv("TWAK_ACCESS_ID") and os.getenv("TWAK_HMAC_SECRET"))
+    return bool(ACCESS_ID and SECRET)
 
 
 def main():
-    dry = "--dry" in sys.argv
-    if dry:
-        print("base cmd:", " ".join(_base()))
+    if "--dry" in sys.argv:
+        print("base:", BASE)
         print("creds present:", have_creds())
-        print("would run: auth status -> price BNB --json -> compete register")
-        print("dry run - no CLI call.")
+        print("dry run - no HTTP call.")
         return
     if not have_creds():
-        print("Missing TWAK_ACCESS_ID / TWAK_HMAC_SECRET. Get them at portal.trustwallet.com and add to .env.")
+        print("Missing TWAK_ACCESS_ID / TWAK_HMAC_SECRET in .env.")
         sys.exit(1)
-    if "--register" in sys.argv:
-        code, out = compete_register()
-    else:
-        code, out = price("BNB")
-    print(out)
-    sys.exit(code)
+    q = sys.argv[1] if len(sys.argv) > 1 and not sys.argv[1].startswith("-") else "BNB"
+    code, body = search_assets(q, 5)
+    print("HTTP", code)
+    print(body[:1500])
+    sys.exit(0 if code == 200 else 1)
 
 
 if __name__ == "__main__":
