@@ -17,9 +17,20 @@ jobs:
           mkdir -p ~/.twak
           echo "$WALLET_JSON_B64" | base64 -d > ~/.twak/wallet.json
           chmod 600 ~/.twak/wallet.json
-      - name: Live swap
+      - name: Trade (balance-aware)
         env:
           TWAK_ACCESS_ID: ${{ secrets.TWAK_ACCESS_ID }}
           TWAK_HMAC_SECRET: ${{ secrets.TWAK_HMAC_SECRET }}
           TWAK_WALLET_PASSWORD: ${{ secrets.TWAK_WALLET_PASSWORD }}
-        run: twak swap 0.003 BNB USDT --chain bsc --slippage 0.5 --json
+        run: |
+          ADDR=0xA7a448F0093c3e5cC1930031cAe4184E5BdDB67E
+          BAL=$(twak balance --chain bsc --address $ADDR --json | jq -r .available)
+          echo "BNB available: $BAL"
+          SELL=$(python3 -c "import sys;print(1 if float(sys.argv[1])>0.012 else 0)" "$BAL")
+          if [ "$SELL" = "1" ]; then
+            echo ">>> BNB -> USDT (0.003)"
+            twak swap 0.003 BNB USDT --chain bsc --slippage 0.5 --json
+          else
+            echo ">>> USDT -> BNB (1.5, replenish)"
+            twak swap 1.5 USDT BNB --chain bsc --slippage 0.5 --json
+          fi
