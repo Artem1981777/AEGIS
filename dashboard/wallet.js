@@ -3,10 +3,10 @@
   "use strict";
   var CHAIN = {
     chainId: "0x61",
-    chainName: "BNB Smart Chain Testnet",
+    chainName: "BNB Smart Chain",
     nativeCurrency: { name: "tBNB", symbol: "tBNB", decimals: 18 },
-    rpcUrls: ["https://data-seed-prebsc-1-s1.binance.org:8545/"],
-    blockExplorerUrls: ["https://testnet.bscscan.com"]
+    rpcUrls: ["https://bsc-dataseed.bnbchain.org"],
+    blockExplorerUrls: ["https://bscscan.com"]
   };
   var SHOWCASE = [
     { name: "MetaMask", rdns: "io.metamask", domain: "metamask.io", url: "https://metamask.io/download" },
