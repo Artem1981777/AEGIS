@@ -1,7 +1,7 @@
 name: AEGIS Trade
 on:
   schedule:
-    - cron: '0 9 * * *'
+    - cron: "0 9 * * *"
   workflow_dispatch:
 jobs:
   trade:
@@ -17,20 +17,31 @@ jobs:
           mkdir -p ~/.twak
           echo "$WALLET_JSON_B64" | base64 -d > ~/.twak/wallet.json
           chmod 600 ~/.twak/wallet.json
-      - name: Trade (balance-aware)
+      - name: Trade (CMC-aware)
         env:
           TWAK_ACCESS_ID: ${{ secrets.TWAK_ACCESS_ID }}
           TWAK_HMAC_SECRET: ${{ secrets.TWAK_HMAC_SECRET }}
           TWAK_WALLET_PASSWORD: ${{ secrets.TWAK_WALLET_PASSWORD }}
+          CMC_API_KEY: ${{ secrets.CMC_API_KEY }}
         run: |
           ADDR=0xA7a448F0093c3e5cC1930031cAe4184E5BdDB67E
+          FG=$(curl -s -H "X-CMC_PRO_API_KEY: $CMC_API_KEY" "https://pro-api.coinmarketcap.com/v3/fear-and-greed/latest" | jq -r ".data.value // 50")
+          CH=$(curl -s -H "X-CMC_PRO_API_KEY: $CMC_API_KEY" "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=BNB" | jq -r ".data.BNB[0].quote.USD.percent_change_24h // 0")
+          echo "CMC FearGreed=$FG BNB24h=$CH"
           BAL=$(twak balance --chain bsc --address $ADDR --json | jq -r .available)
           echo "BNB available: $BAL"
-          SELL=$(python3 -c "import sys;print(1 if float(sys.argv[1])>0.012 else 0)" "$BAL")
-          if [ "$SELL" = "1" ]; then
-            echo ">>> BNB -> USDT (0.003)"
+          HAVE=$(python3 -c "import sys;print(1 if float(sys.argv[1])>0.012 else 0)" "$BAL")
+          FGI=$(python3 -c "import sys;print(int(float(sys.argv[1])))" "$FG")
+          if [ "$FGI" -le 25 ] && [ "$HAVE" = "0" ]; then
+            echo ">>> Extreme Fear: accumulate USDT->BNB"
+            twak swap 1.5 USDT BNB --chain bsc --slippage 0.5 --json
+          elif [ "$FGI" -ge 75 ] && [ "$HAVE" = "1" ]; then
+            echo ">>> Extreme Greed: take profit BNB->USDT"
+            twak swap 0.003 BNB USDT --chain bsc --slippage 0.5 --json
+          elif [ "$HAVE" = "1" ]; then
+            echo ">>> Neutral: rotate BNB->USDT"
             twak swap 0.003 BNB USDT --chain bsc --slippage 0.5 --json
           else
-            echo ">>> USDT -> BNB (1.5, replenish)"
+            echo ">>> Neutral: replenish USDT->BNB"
             twak swap 1.5 USDT BNB --chain bsc --slippage 0.5 --json
           fi
