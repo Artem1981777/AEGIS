@@ -1,12 +1,14 @@
 # src/chain/trader.py
-# Maps a run_cycle decision to an on-chain action on BSC testnet.
-# Heartbeat = WBNB wrap/unwrap (guaranteed); real DEX swap when token+liquidity available.
+# Maps a run_cycle decision to an on-chain action on BSC mainnet via TWAK.
+# Competition wallet is TWAK-managed (no private key); trades go through twak swap.
 import os
 
-from src.chain import wallet, dex
+from src.chain import twak_swap
 
 TRADE_NOTIONAL_BNB = float(os.getenv("TRADE_NOTIONAL_BNB", "0.05"))
 MIN_TRADE_BNB = float(os.getenv("MIN_TRADE_BNB", "0.005"))
+TRADE_TOKEN = os.getenv("TRADE_TOKEN", "USDT")
+
 
 def _amount_for(decision):
     pct = float(decision.get("final_size_pct") or 0.0)
@@ -16,32 +18,39 @@ def _amount_for(decision):
     return round(amt, 6)
 
 
+def _token_out(quote_res):
+    if not quote_res.get("ok") or not quote_res.get("data"):
+        return None
+    raw = str(quote_res["data"].get("output", "")).strip().split(" ")[0]
+    try:
+        val = float(raw)
+    except ValueError:
+        return None
+    return val if val > 0 else None
+
+
 def execute(decision, live=False):
     verdict = decision.get("verdict")
     side = (decision.get("side") or "").upper()
     if verdict not in ("APPROVE", "RESIZE"):
         return {"executed": False, "reason": "blocked by risk: " + str(verdict)}
-    if not wallet.address():
-        return {"executed": False, "reason": "no wallet"}
     amount = _amount_for(decision)
-    token_addr = os.getenv("TRADE_TOKEN_ADDRESS", "")
-    if side == "BUY" and token_addr:
-        q = dex.quote_out(amount, token_addr)
-        if isinstance(q, int) and q > 0:
-            res = dex.swap_bnb_for_token(token_addr, amount, dry_run=not live)
-            res["executed"] = bool(res.get("ok"))
-            res["mode"] = "swap"
-            res["intended_token"] = decision.get("token")
-            return res
+    token = TRADE_TOKEN
     if side == "SELL":
-        res = dex.unwrap(amount, dry_run=not live)
-        res["mode"] = "heartbeat_unwrap"
+        token_amt = _token_out(twak_swap.quote(amount, "BNB", token))
+        if not token_amt:
+            return {"executed": False, "reason": "no sell quote", "side": side}
+        res = twak_swap.execute(token_amt, token, "BNB") if live else twak_swap.quote(token_amt, token, "BNB")
+        pair = token + "->BNB"
     else:
-        res = dex.wrap(amount, dry_run=not live)
-        res["mode"] = "heartbeat_wrap"
+        res = twak_swap.execute(amount, "BNB", token) if live else twak_swap.quote(amount, "BNB", token)
+        pair = "BNB->" + token
     res["executed"] = bool(res.get("ok"))
-    res["intended_token"] = decision.get("token")
+    res["mode"] = "live_swap" if live else "dry_quote"
+    res["side"] = side
+    res["pair"] = pair
     res["amount_bnb"] = amount
+    res["intended_token"] = decision.get("token")
     return res
 
 
