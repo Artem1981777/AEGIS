@@ -1,0 +1,16 @@
+name: AEGIS Trade
+on:
+  push:
+    paths:
+      - .github/workflows/trade.yml
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Runner IP
+        run: curl -s https://ipinfo.io/json || true
+      - name: Install TWAK CLI
+        run: npm install -g @trustwallet/cli
+      - name: TWAK dry quote
+        run: twak swap 0.005 BNB USDT --chain bsc --slippage 0.5 --quote-only --json
