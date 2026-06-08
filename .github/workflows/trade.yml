@@ -1,19 +1,25 @@
 name: AEGIS Trade
 on:
-  push:
-    paths:
-      - .github/workflows/trade.yml
+  schedule:
+    - cron: '0 9 * * *'
   workflow_dispatch:
 jobs:
-  validate:
+  trade:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Runner IP
-        run: curl -s https://ipinfo.io/json || true
       - name: Install TWAK CLI
         run: npm install -g @trustwallet/cli
-      - name: TWAK dry quote
+      - name: Restore wallet
+        env:
+          WALLET_JSON_B64: ${{ secrets.WALLET_JSON_B64 }}
+        run: |
+          mkdir -p ~/.twak
+          echo "$WALLET_JSON_B64" | base64 -d > ~/.twak/wallet.json
+          chmod 600 ~/.twak/wallet.json
+      - name: Live swap
         env:
           TWAK_ACCESS_ID: ${{ secrets.TWAK_ACCESS_ID }}
           TWAK_HMAC_SECRET: ${{ secrets.TWAK_HMAC_SECRET }}
-        run: twak swap 0.005 BNB USDT --chain bsc --slippage 0.5 --quote-only --json
+          TWAK_WALLET_PASSWORD: ${{ secrets.TWAK_WALLET_PASSWORD }}
+        run: twak swap 0.003 BNB USDT --chain bsc --slippage 0.5 --json
