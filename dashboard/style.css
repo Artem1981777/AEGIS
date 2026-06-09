@@ -1,7 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap");
 :root{--bg:#070a12;--ink:#e8eefc;--mut:#8a99b5;--panel:rgba(255,255,255,.045);--line:rgba(255,255,255,.09);--vio:#7c5cff;--cyan:#22d3ee;--mint:#34d399;--rose:#fb7185;--sky:#38bdf8;--r2:24px}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
+body{font-family:"MedievalSharp","Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;overflow-x:hidden}
 .bg-mesh{position:fixed;inset:0;z-index:-4;background:radial-gradient(60vw 50vh at 15% 10%,rgba(124,92,255,.30),transparent 60%),radial-gradient(55vw 45vh at 85% 12%,rgba(34,211,238,.22),transparent 60%),radial-gradient(70vw 60vh at 60% 115%,rgba(52,211,153,.16),transparent 60%);filter:blur(10px);animation:mesh 20s ease-in-out infinite alternate}
 @keyframes mesh{from{transform:translateY(0) scale(1)}to{transform:translateY(-30px) scale(1.06)}}
 .bg-grid{position:fixed;inset:0;z-index:-3;background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px);background-size:46px 46px;-webkit-mask-image:radial-gradient(circle at 50% 25%,#000,transparent 80%);mask-image:radial-gradient(circle at 50% 25%,#000,transparent 80%);opacity:.5}
@@ -66,11 +67,11 @@ body{font-family:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;back
 .alloc .bar{height:.55rem;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
 .alloc .bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--vio),var(--cyan))}
 .gauges{display:flex;gap:1rem;justify-content:space-around;flex-wrap:wrap}
-.gauge{position:relative;width:96px;text-align:center}
-.gauge svg{width:96px;height:96px;transform:rotate(-90deg)}
+.gauge{position:relative;width:140px;text-align:center}
+.gauge svg{width:140px;height:140px;transform:rotate(-90deg)}
 .gauge .track{stroke:rgba(255,255,255,.08)}
 .gauge .val{stroke-linecap:round;transition:stroke-dashoffset 1s ease}
-.gauge .num{position:absolute;top:0;left:0;width:96px;height:96px;display:grid;place-items:center;font-weight:800;font-size:.95rem}
+.gauge .num{position:absolute;top:0;left:0;width:140px;height:140px;display:grid;place-items:center;font-weight:800;font-size:1.35rem}
 .gauge .lab{font-size:.72rem;color:var(--mut);margin-top:.3rem}
 .tbl{width:100%;border-collapse:collapse;font-size:.86rem}
 .tbl th{text-align:left;color:var(--mut);font-weight:600;font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;padding:.6rem .5rem;border-bottom:1px solid var(--line)}
