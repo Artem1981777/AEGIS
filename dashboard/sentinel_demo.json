@@ -1,0 +1,79 @@
+{
+  "title": "AEGIS Risk Sentinel demo",
+  "config": {
+    "max_drawdown_pct": 10.0,
+    "per_trade_max_pct": 3.0,
+    "max_slippage_bps": 50,
+    "daily_trade_limit": 2,
+    "vol_target_annual": 0.4
+  },
+  "results": [
+    {
+      "scenario": "Normal momentum buy",
+      "token": "BNB",
+      "requested_size_pct": 2.0,
+      "slippage_bps": 20,
+      "token_vol_annual": 0.4,
+      "drawdown_pct": 0.0,
+      "verdict": "APPROVE",
+      "approved_size_pct": 2.0,
+      "reason": "within risk bounds",
+      "expected": "APPROVE",
+      "match": true
+    },
+    {
+      "scenario": "High-volatility sizing",
+      "token": "BNB",
+      "requested_size_pct": 5.0,
+      "slippage_bps": 20,
+      "token_vol_annual": 0.8,
+      "drawdown_pct": 0.0,
+      "verdict": "RESIZE",
+      "approved_size_pct": 2.5,
+      "reason": "vol-targeted resize",
+      "expected": "RESIZE",
+      "match": true
+    },
+    {
+      "scenario": "Slippage spike",
+      "token": "BNB",
+      "requested_size_pct": 2.0,
+      "slippage_bps": 120,
+      "token_vol_annual": 0.4,
+      "drawdown_pct": 0.0,
+      "verdict": "VETO",
+      "approved_size_pct": 0.0,
+      "reason": "slippage too high",
+      "expected": "VETO",
+      "match": true
+    },
+    {
+      "scenario": "Unknown token",
+      "token": "SCAMCOIN",
+      "requested_size_pct": 2.0,
+      "slippage_bps": 20,
+      "token_vol_annual": 0.4,
+      "drawdown_pct": 0.0,
+      "verdict": "VETO",
+      "approved_size_pct": 0.0,
+      "reason": "token not in allowlist",
+      "expected": "VETO",
+      "match": true
+    },
+    {
+      "scenario": "Drawdown breach",
+      "token": "BNB",
+      "requested_size_pct": 2.0,
+      "slippage_bps": 20,
+      "token_vol_annual": 0.4,
+      "drawdown_pct": 12.0,
+      "verdict": "KILL",
+      "approved_size_pct": 0.0,
+      "reason": "drawdown cap hit -> exit to stable",
+      "expected": "KILL",
+      "match": true
+    }
+  ],
+  "passed": 5,
+  "total": 5
+}
