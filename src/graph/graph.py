@@ -79,6 +79,7 @@ def build_state(result, portfolio, signals, cfg, start_equity=None,
         state["positions"] = positions
     if trades is not None:
         state["trades"] = trades
+    state["x402BtcUsd"] = result.get("x402_btc_usd")
     return state
 
 
@@ -103,6 +104,11 @@ def run_cycle(signals, token, portfolio, cfg=None, publish=True,
     proposal = propose_trade(regime, token, signals.volatility)
     verdict, size, reason = RiskSentinel(cfg).review(proposal, portfolio)
     final_size = size if verdict in (Verdict.APPROVE, Verdict.RESIZE) else 0.0
+    try:
+        from src.tools.x402 import btc, price_usd
+        x402_btc_usd = price_usd(btc())
+    except Exception:
+        x402_btc_usd = None
     result = {
         "token": token,
         "regime": regime,
@@ -112,6 +118,7 @@ def run_cycle(signals, token, portfolio, cfg=None, publish=True,
         "final_size_pct": _round(final_size),
         "confidence": _confidence(signals, regime),
         "reason": reason,
+        "x402_btc_usd": x402_btc_usd,
     }
     if publish:
         write_state(build_state(result, portfolio, signals, cfg,
