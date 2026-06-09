@@ -47,6 +47,16 @@ A backtestable, execution-free strategy specification packaged as an official Co
 - Trust Wallet Agent Kit: self-custody execution on BNB mainnet via TWAK CLI.
 - BNB AI Agent SDK: ERC-8004 identity (agentId 1282) for verifiable agent provenance.
 
+## Native x402 payments (live on-chain proof)
+
+AEGIS pays for CoinMarketCap data per request via x402 (HTTP 402) over the Trust Wallet Agent Kit, settling real USDC on BNB Smart Chain. No API key. The paid call runs inside run_cycle (the autonomous loop), with graceful fallback and skip-reason logging.
+
+- Client src/tools/x402.py wired into src/graph/graph.py run_cycle.
+- Asset USDC on BSC 0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d, permit2-exact, 0.01 USDC per call.
+- Permit2 approval tx 0xd9b118a05cab52f60ce65c0878e994c20b4a8b8bc7f71cdb858616ef0d1aa096
+- Funding swap USDT to USDC tx 0xaaa27d5525e3e5872119576eec6d5572e10f58ed46da4f9b7ae52ed5abce82e5
+- Live proof: run_cycle wrote x402BtcUsd = 62828.15 to dashboard/state.json from a paid response.
+
 ## Layout
 - src/agents - perception, regime, strategy, execution
 - src/risk/sentinel.py - Risk Sentinel (veto and kill)
