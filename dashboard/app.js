@@ -46,3 +46,32 @@ $("nav").addEventListener("click",e=>{const b=e.target.closest(".nav-item");if(!
 function initTilt(){if(window.matchMedia("(hover:none)").matches)return;document.querySelectorAll(".tilt").forEach(c=>{c.addEventListener("pointermove",e=>{const r=c.getBoundingClientRect();const px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;c.style.transform="perspective(900px) rotateY("+(px*8).toFixed(2)+"deg) rotateX("+(-py*8).toFixed(2)+"deg)";});c.addEventListener("pointerleave",()=>{c.style.transform="";});});}
 async function boot(){let s=JSON.parse(JSON.stringify(DEMO));try{const r=await fetch("state.json",{cache:"no-store"});if(r.ok)s=Object.assign(s,await r.json());}catch(e){}render(s);initTilt();}
 boot();
+
+/* sentinelDemoRenderer */
+(function(){
+  var cls={APPROVE:"approve",RESIZE:"resize",VETO:"veto",KILL:"kill"};
+  fetch("sentinel_demo.json",{cache:"no-store"}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+    if(!j)return;
+    var meta=document.getElementById("sdMeta");
+    if(meta&&j.config){var c=j.config;meta.textContent="max_dd "+c.max_drawdown_pct+"pct   per-trade "+c.per_trade_max_pct+"pct   slippage "+c.max_slippage_bps+"bps   daily "+c.daily_trade_limit;}
+    var tb=document.getElementById("sentinelDemo");
+    if(!tb)return;
+    tb.textContent="";
+    (j.results||[]).forEach(function(x){
+      var tr=document.createElement("tr");
+      function cell(t,mono){var td=document.createElement("td");if(mono){td.className="mono";}td.textContent=t;tr.appendChild(td);}
+      cell(x.scenario,false);
+      cell(x.token,false);
+      cell(x.requested_size_pct+"pct",true);
+      var vtd=document.createElement("td");
+      var sp=document.createElement("span");
+      sp.className="pill "+(cls[String(x.verdict)]||"");
+      sp.textContent=x.verdict;
+      vtd.appendChild(sp);
+      tr.appendChild(vtd);
+      cell(x.approved_size_pct+"pct",true);
+      cell(x.reason,false);
+      tb.appendChild(tr);
+    });
+  }).catch(function(e){});
+})();
