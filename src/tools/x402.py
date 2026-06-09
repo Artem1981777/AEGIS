@@ -7,6 +7,6 @@ def get(path,q=""):
     c+=["--prefer-method","permit2-exact","--max-payment","10000000000000000","--yes","--json"]
     o=subprocess.run(c,capture_output=True,text=True,timeout=120)
     t=o.stdout+o.stderr
-    return json.loads(t[t.find("{"):])
+    return json.JSONDecoder().raw_decode(t[t.find("{"):])[0]
 def btc():
     return get("/cryptocurrency/quotes/latest","id=1")
