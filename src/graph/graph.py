@@ -107,8 +107,9 @@ def run_cycle(signals, token, portfolio, cfg=None, publish=True,
     try:
         from src.tools.x402 import btc, price_usd
         x402_btc_usd = price_usd(btc())
-    except Exception:
+    except Exception as _e:
         x402_btc_usd = None
+        print("x402 skipped:", _e)
     result = {
         "token": token,
         "regime": regime,

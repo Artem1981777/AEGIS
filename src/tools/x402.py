@@ -7,7 +7,10 @@ def get(path,q=""):
     c+=["--prefer-method","permit2-exact","--max-payment","10000000000000000","--yes","--json"]
     o=subprocess.run(c,capture_output=True,text=True,timeout=120)
     t=o.stdout+o.stderr
-    return json.JSONDecoder().raw_decode(t[t.find("{"):])[0]
+    d=json.JSONDecoder().raw_decode(t[t.find("{"):])[0]
+    if isinstance(d,dict) and "data" not in d:
+        raise RuntimeError("x402 payment failed: "+str(d.get("error") or d))
+    return d
 def btc():
     return get("/cryptocurrency/quotes/latest","id=1")
 def price_usd(p):
