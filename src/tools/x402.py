@@ -10,3 +10,5 @@ def get(path,q=""):
     return json.JSONDecoder().raw_decode(t[t.find("{"):])[0]
 def btc():
     return get("/cryptocurrency/quotes/latest","id=1")
+def price_usd(p):
+    return p["data"][0]["quote"][0]["price"]
