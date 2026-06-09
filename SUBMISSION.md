@@ -69,3 +69,13 @@ Expected output: 5 of 5 verdicts match — APPROVE, RESIZE, VETO, VETO, KILL —
 - Deeper TWAK x402 metered execution and twak automate scheduling.
 - Expanded strategy-skill library on the CoinMarketCap Agent Hub.
 - Multi-asset regime rotation within the allowlist.
+
+## Native x402 payments (live on-chain proof)
+
+AEGIS pays for CoinMarketCap market data per request via the x402 protocol (HTTP 402) over Trust Wallet Agent Kit (TWAK), settling real USDC micropayments on BNB Smart Chain. No API key, no subscription.
+
+- Client: `src/tools/x402.py` (`btc()` and `price_usd()` call `twak x402 request` and parse the paid response).
+- Asset: USDC on BSC `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d`, method permit2-exact, $0.01 per call.
+- Permit2 one-time approval tx: `0xd9b118a05cab52f60ce65c0878e994c20b4a8b8bc7f71cdb858616ef0d1aa096`
+- Funding swap (USDT to USDC) tx: `0xcdb4c38d368bff0d628435e690794681336f100dc2a59afedc02df6bcadba252`
+- Verified live: a paid x402 request through our own code returned BTC = $62,640.52.
