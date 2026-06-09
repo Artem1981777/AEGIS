@@ -79,3 +79,5 @@ AEGIS pays for CoinMarketCap market data per request via the x402 protocol (HTTP
 - Permit2 one-time approval tx: `0xd9b118a05cab52f60ce65c0878e994c20b4a8b8bc7f71cdb858616ef0d1aa096`
 - Funding swap (USDT to USDC) tx: `0xcdb4c38d368bff0d628435e690794681336f100dc2a59afedc02df6bcadba252`
 - Verified live: a paid x402 request through our own code returned BTC = $62,640.52.
+- Wired into the autonomous loop: the paid x402 call runs inside run_cycle (src/graph/graph.py) with graceful fallback and skip-reason logging, not a side script.
+- Live in-loop proof: a run_cycle run wrote x402BtcUsd = 62828.15 to dashboard/state.json from a paid response; funding swap tx 0xaaa27d5525e3e5872119576eec6d5572e10f58ed46da4f9b7ae52ed5abce82e5.
