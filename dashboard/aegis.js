@@ -39,7 +39,7 @@
   bv.onclick = function () {
     voiceOn = !voiceOn;
     bv.textContent = (voiceOn ? "\ud83d\udd0a Voice: on" : "\ud83d\udd0a Voice: off");
-    if (voiceOn) say(last);
+    if (voiceOn) say(last); else if (window.speechSynthesis) speechSynthesis.cancel();
   };
   function say(t) {
     if (!voiceOn || !t || !window.speechSynthesis) return;
