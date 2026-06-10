@@ -42,5 +42,15 @@
   ],
   "pnlValue": 250.0,
   "pnlPct": 2.5,
-  "x402BtcUsd": 62828.15260714553
+  "x402BtcUsd": 62828.15260714553,
+  "treasury": {
+    "cap_usdt": 5.0,
+    "spent_usdt": 1.0,
+    "remaining_usdt": 4.0,
+    "safe": "0x9BEa0C7b2266F6d7989D27F55d411001736E8949",
+    "module": "0xCFbFaC74C26F8647cBDb8c5caf80BB5b32E43134",
+    "delegate": "0xBeaF9e2B5a63C338FD79cEd8bB2C2d58dA0deAe3",
+    "reset_min": 1440,
+    "updated_at": 1781056970
+  }
 }
