@@ -92,3 +92,17 @@ https://aegis-delta-nine.vercel.app
 
 ## License
 MIT
+
+## 🛡️ Dual-Guard Treasury (live on BNB Chain mainnet)
+
+AEGIS is autonomous but **cannot drain its treasury**:
+- **Sentinel** — software risk veto (APPROVE / RESIZE / VETO / KILL).
+- **Safe Allowance Module** — on-chain hard cap; agent is a delegate with a **5 USDT/day** limit; governor key held by the human only.
+
+| Component | Address |
+|---|---|
+| Safe (treasury) | `0x9BEa0C7b2266F6d7989D27F55d411001736E8949` |
+| Allowance Module | `0xCFbFaC74C26F8647cBDb8c5caf80BB5b32E43134` |
+| Delegate (agent) | `0xBeaF9e2B5a63C338FD79cEd8bB2C2d58dA0deAe3` |
+
+Live guarded transfer proof: `0x9dcff0bf…c671` (BscScan). Full details in `SUBMISSION.md`.
