@@ -4,10 +4,16 @@
 import os
 
 from src.chain import twak_swap
+try:
+    from src.tools import safe_allowance
+except Exception:
+    safe_allowance = None
 
 TRADE_NOTIONAL_BNB = float(os.getenv("TRADE_NOTIONAL_BNB", "0.05"))
 MIN_TRADE_BNB = float(os.getenv("MIN_TRADE_BNB", "0.005"))
 TRADE_TOKEN = os.getenv("TRADE_TOKEN", "USDT")
+BNB_PRICE_USD = float(os.getenv("BNB_PRICE_USD","0") or 0)
+TREASURY_GATE_FAIL_CLOSED = os.getenv("TREASURY_GATE_FAIL_CLOSED","0") in ("1","true")
 
 
 def _amount_for(decision):
@@ -29,7 +35,7 @@ def _token_out(quote_res):
     return val if val > 0 else None
 
 
-def execute(decision, live=False):
+def _execute_raw(decision, live=False):
     verdict = decision.get("verdict")
     side = (decision.get("side") or "").upper()
     if verdict not in ("APPROVE", "RESIZE"):
@@ -71,3 +77,23 @@ if __name__ == "__main__":
     out = decide_and_execute(sig, "CAKE", port, live=live)
     print("verdict:", out["verdict"], "| side:", out["side"], "| size:", out["final_size_pct"])
     print("execution:", out["execution"])
+
+
+def execute(decision, live=False):
+    amt = _amount_for(decision)
+    nusd = float(decision.get("notional_usd") or 0) or (amt * BNB_PRICE_USD if BNB_PRICE_USD > 0 else 0.0)
+    treasury = {"checked": False}
+    if safe_allowance is not None:
+        try:
+            ok, reason, snap = safe_allowance.treasury_gate(nusd)
+            treasury = {"checked": True, "ok": ok, "reason": reason, "notional_usd": nusd, "remaining_usdt": (snap or {}).get("remaining_usdt")}
+            if not ok and TREASURY_GATE_FAIL_CLOSED:
+                return {"executed": False, "reason": "blocked by treasury: " + reason, "treasury": treasury}
+        except Exception as e:
+            treasury = {"checked": False, "error": str(e)}
+            if TREASURY_GATE_FAIL_CLOSED:
+                return {"executed": False, "reason": "treasury error: " + str(e), "treasury": treasury}
+    res = _execute_raw(decision, live=live)
+    if isinstance(res, dict):
+        res["treasury"] = treasury
+    return res
