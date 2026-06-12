@@ -4,6 +4,7 @@
 import os, sys
 from typing import TypedDict, Any
 from langgraph.graph import StateGraph, END
+from src.chain.portfolio import live_portfolio_state, baseline_equity
 
 
 class AegisState(TypedDict, total=False):
@@ -74,7 +75,7 @@ def main():
     except Exception:
         from src.sentinel import PortfolioState
     signals = MarketSignals(62, 0.58, 0.47, 0.012)
-    portfolio = PortfolioState(10250, 10500, 3)
+    portfolio = live_portfolio_state()
     live = "--live" in sys.argv
     app = build_app()
     final = app.invoke({"signals": signals, "token": "CAKE", "portfolio": portfolio, "live": live})

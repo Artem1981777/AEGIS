@@ -6,3 +6,12 @@ __pycache__/
 data/
 node_modules/
 dist/
+
+.governor_key
+
+.governor_key
+*.bak
+dashboard/peak.json
+.delegate_key
+.safe_address
+aegis-wallet-backup.json

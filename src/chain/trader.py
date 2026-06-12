@@ -4,6 +4,7 @@
 import os
 
 from src.chain import twak_swap
+from src.chain.portfolio import live_portfolio_state, baseline_equity
 try:
     from src.tools import safe_allowance
 except Exception:
@@ -73,7 +74,7 @@ if __name__ == "__main__":
     from src.risk.sentinel import PortfolioState
     live = "--live" in sys.argv
     sig = MarketSignals(62, 0.58, 0.47, 0.012)
-    port = PortfolioState(10250.0, 10500.0, 3)
+    port = live_portfolio_state()
     out = decide_and_execute(sig, "CAKE", port, live=live)
     print("verdict:", out["verdict"], "| side:", out["side"], "| size:", out["final_size_pct"])
     print("execution:", out["execution"])

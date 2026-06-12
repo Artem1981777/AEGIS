@@ -8,6 +8,7 @@ from src.agents.strategy import propose_trade
 from src.risk.sentinel import RiskConfig, RiskSentinel, PortfolioState, Verdict
 from src.config import SETTINGS
 from src.tools import cmc
+from src.chain.portfolio import live_portfolio_state, baseline_equity
 
 
 REGIME_LABELS = {"risk_off": "RISK-OFF", "trend": "TREND", "range": "RANGE"}
@@ -131,8 +132,8 @@ def run_cycle(signals, token, portfolio, cfg=None, publish=True,
 
 if __name__ == "__main__":
     sig = MarketSignals(fear_greed=62, trend_strength=0.58, volatility=0.47, funding_rate=0.012)
-    pf = PortfolioState(equity=10250.0, peak_equity=10500.0, trades_today=3)
-    out = run_cycle(sig, "CAKE", pf, start_equity=10000.0)
+    pf = live_portfolio_state()
+    out = run_cycle(sig, "CAKE", pf, start_equity=baseline_equity())
     print("regime  :", out["regime"])
     print("side    :", out["side"], "->", out["final_size_pct"], "%")
     print("verdict :", out["verdict"], "-", out["reason"])

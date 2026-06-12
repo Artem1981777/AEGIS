@@ -1,20 +1,20 @@
 {
-  "equity": 10250.0,
-  "drawdown": 2.4,
-  "tradesToday": 3,
+  "equity": 10.82,
+  "drawdown": 0.0,
+  "tradesToday": 0,
   "regime": "TREND",
   "decision": {
     "token": "CAKE",
     "side": "BUY",
-    "size": 0.0,
+    "size": 3.0,
     "confidence": 73,
-    "verdict": "VETO",
-    "reason": "daily trade limit reached"
+    "verdict": "RESIZE",
+    "reason": "vol-targeted resize"
   },
   "risk": {
-    "drawdownUsed": 23.8,
-    "exposure": 0.0,
-    "dailyTradesUsed": 100.0
+    "drawdownUsed": 0.0,
+    "exposure": 3.0,
+    "dailyTradesUsed": 0.0
   },
   "signals": [
     {
@@ -37,20 +37,10 @@
   "reasoning": [
     "Regime=TREND (F&G 62, trend +0.58).",
     "Strategy proposes BUY CAKE at base 10.0%.",
-    "Sentinel VETO: daily trade limit reached.",
-    "Final size 0.0% of equity."
+    "Sentinel RESIZE: vol-targeted resize.",
+    "Final size 3.0% of equity."
   ],
-  "pnlValue": 250.0,
-  "pnlPct": 2.5,
-  "x402BtcUsd": 62828.15260714553,
-  "treasury": {
-    "cap_usdt": 5.0,
-    "spent_usdt": 1.0,
-    "remaining_usdt": 4.0,
-    "safe": "0x9BEa0C7b2266F6d7989D27F55d411001736E8949",
-    "module": "0xCFbFaC74C26F8647cBDb8c5caf80BB5b32E43134",
-    "delegate": "0xBeaF9e2B5a63C338FD79cEd8bB2C2d58dA0deAe3",
-    "reset_min": 1440,
-    "updated_at": 1781056970
-  }
+  "pnlValue": 0.0,
+  "pnlPct": 0.0,
+  "x402BtcUsd": 63803.20712487958
 }
