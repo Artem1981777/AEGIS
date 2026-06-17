@@ -1,11 +1,11 @@
 # AEGIS - Autonomous Execution and Guarded Intelligence System
 
-Risk-gated, CMC-aware AI trading agent on BNB Chain. Built for BNB Hack: AI Trading Agent Edition (CoinMarketCap x Trust Wallet). Competes in Track 1 (Autonomous Trading Agents) and Track 2 (CMC Strategy Skills), and targets the CMC Agent Hub, Trust Wallet Agent Kit, and BNB AI Agent SDK special prizes.
+Risk-gated, CMC-aware AI trading agent on BNB Chain. Built for BNB Hack: AI Trading Agent Edition (CoinMarketCap x Trust Wallet). Submitted to Track 1 (Autonomous Trading Agents); also ships a CMC Strategy Skill (Track 2 spec). Targets the CMC Agent Hub, Trust Wallet Agent Kit, and BNB AI Agent SDK special prizes.
 
 ## Why AEGIS is different
 Most agents chase alpha and blow the drawdown gate, and a drawdown breach is an automatic disqualification. AEGIS inverts the problem:
 - Survival-first: a deterministic Risk Sentinel can RESIZE, VETO, or KILL any trade before it reaches the chain. The guardrail is the edge.
-- Verifiable autonomy: an ERC-8004 on-chain identity (agentId 1282) plus a full decision log of regime, CMC Fear and Greed, momentum, and the Sentinel verdict behind every action, so judges can audit each trade on bscscan.
+- Verifiable autonomy: an ERC-8004 on-chain identity (agentId 1282) plus a full decision log of regime, CMC Fear and Greed, momentum, and the Sentinel verdict behind every decision in the live trading loop, so judges can audit each trade on bscscan.
 - Full partner stack in one architecture: live CoinMarketCap signals, Trust Wallet Agent Kit self-custody execution, and BNB AI Agent SDK identity, eligible for all three special prizes.
 - Live and transparent: a public dashboard streams equity, drawdown, and the exact signal behind each decision in real time.
 
@@ -87,8 +87,11 @@ python -m src.graph.langgraph_app
 ## Risk Constitution
 Max drawdown 10 percent (well inside the disqualification line), per-trade max 3 percent, daily limit 2, min 1 trade per day, slippage cap 50 bps.
 
+## Demo video
+https://youtube.com/shorts/eom-HqzNHc8
+
 ## Dashboard
-https://aegis-delta-nine.vercel.app
+https://aegis-artem7.vercel.app
 
 ## License
 MIT
