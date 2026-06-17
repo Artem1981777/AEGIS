@@ -6,42 +6,30 @@ on:
 jobs:
   trade:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Python deps
+        run: pip install -r requirements.txt
       - name: Install TWAK CLI
         run: npm install -g @trustwallet/cli
       - name: Restore wallet
         env:
-          WALLET_JSON_B64: ${{ secrets.WALLET_JSON_B64 }}
+          WALLET_JSON_B64: ${{ secrets.WALLET_JSON_B64 }} 
         run: |
           mkdir -p ~/.twak
           echo "$WALLET_JSON_B64" | base64 -d > ~/.twak/wallet.json
           chmod 600 ~/.twak/wallet.json
-      - name: Trade (CMC-aware)
+      - name: Trade (CMC -> Risk Sentinel -> TWAK)
         env:
-          TWAK_ACCESS_ID: ${{ secrets.TWAK_ACCESS_ID }}
-          TWAK_HMAC_SECRET: ${{ secrets.TWAK_HMAC_SECRET }}
-          TWAK_WALLET_PASSWORD: ${{ secrets.TWAK_WALLET_PASSWORD }}
-          CMC_API_KEY: ${{ secrets.CMC_API_KEY }}
-        run: |
-          ADDR=0xA7a448F0093c3e5cC1930031cAe4184E5BdDB67E
-          FG=$(curl -s -H "X-CMC_PRO_API_KEY: $CMC_API_KEY" "https://pro-api.coinmarketcap.com/v3/fear-and-greed/latest" | jq -r ".data.value // 50")
-          CH=$(curl -s -H "X-CMC_PRO_API_KEY: $CMC_API_KEY" "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?symbol=BNB" | jq -r ".data.BNB[0].quote.USD.percent_change_24h // 0")
-          echo "CMC FearGreed=$FG BNB24h=$CH"
-          BAL=$(twak balance --chain bsc --address $ADDR --json | jq -r .available)
-          echo "BNB available: $BAL"
-          HAVE=$(python3 -c "import sys;print(1 if float(sys.argv[1])>0.012 else 0)" "$BAL")
-          FGI=$(python3 -c "import sys;print(int(float(sys.argv[1])))" "$FG")
-          if [ "$FGI" -le 25 ] && [ "$HAVE" = "0" ]; then
-            echo ">>> Extreme Fear: accumulate USDT->BNB"
-            twak swap 1.5 USDT BNB --chain bsc --slippage 0.5 --json
-          elif [ "$FGI" -ge 75 ] && [ "$HAVE" = "1" ]; then
-            echo ">>> Extreme Greed: take profit BNB->USDT"
-            twak swap 0.003 BNB USDT --chain bsc --slippage 0.5 --json
-          elif [ "$HAVE" = "1" ]; then
-            echo ">>> Neutral: rotate BNB->USDT"
-            twak swap 0.003 BNB USDT --chain bsc --slippage 0.5 --json
-          else
-            echo ">>> Neutral: replenish USDT->BNB"
-            twak swap 1.5 USDT BNB --chain bsc --slippage 0.5 --json
-          fi
+          TWAK_ACCESS_ID: ${{ secrets.TWAK_ACCESS_ID }} 
+          TWAK_HMAC_SECRET: ${{ secrets.TWAK_HMAC_SECRET }} 
+          TWAK_WALLET_PASSWORD: ${{ secrets.TWAK_WALLET_PASSWORD }} 
+          CMC_API_KEY: ${{ secrets.CMC_API_KEY }} 
+          TRADE_TOKEN: USDT
+          TRADE_NOTIONAL_BNB: "0.05"
+          MIN_TRADE_BNB: "0.005"
+        run: PYTHONPATH=. python -m src.chain.trader --live

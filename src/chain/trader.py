@@ -68,18 +68,6 @@ def decide_and_execute(signals, token, portfolio, live=False, **kw):
     return decision
 
 
-if __name__ == "__main__":
-    import sys
-    from src.agents.regime import MarketSignals
-    from src.risk.sentinel import PortfolioState
-    live = "--live" in sys.argv
-    sig = MarketSignals(62, 0.58, 0.47, 0.012)
-    port = live_portfolio_state()
-    out = decide_and_execute(sig, "CAKE", port, live=live)
-    print("verdict:", out["verdict"], "| side:", out["side"], "| size:", out["final_size_pct"])
-    print("execution:", out["execution"])
-
-
 def execute(decision, live=False):
     amt = _amount_for(decision)
     nusd = float(decision.get("notional_usd") or 0) or (amt * BNB_PRICE_USD if BNB_PRICE_USD > 0 else 0.0)
@@ -98,3 +86,15 @@ def execute(decision, live=False):
     if isinstance(res, dict):
         res["treasury"] = treasury
     return res
+
+
+if __name__ == "__main__":
+    import sys
+    from src.agents.regime import MarketSignals
+    from src.risk.sentinel import PortfolioState
+    live = "--live" in sys.argv
+    sig = None  # live CMC signals via resolve_signals(token)
+    port = live_portfolio_state()
+    out = decide_and_execute(sig, "CAKE", port, live=live)
+    print("verdict:", out["verdict"], "| side:", out["side"], "| size:", out["final_size_pct"])
+    print("execution:", out["execution"])

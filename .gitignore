@@ -15,3 +15,4 @@ dashboard/peak.json
 .delegate_key
 .safe_address
 aegis-wallet-backup.json
+*.bak*
