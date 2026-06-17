@@ -1,17 +1,17 @@
 const DEMO={
 equity:10250,pnlValue:250,pnlPct:2.5,drawdown:4.2,winRate:61,sharpe:1.8,tradesToday:3,regime:"TREND",
 decision:{token:"CAKE",side:"BUY",size:8,confidence:72,verdict:"APPROVE",reason:"Within risk limits"},
-equitySeries:[9000,9050,8980,9120,9210,9180,9300,9420,9380,9510,9600,9555,9680,9720,9810,9790,9900,9980,10040,10010,10120,10180,10240,10250],
+equitySeries:[10.82,10.82,10.82,10.82,10.82,10.82,10.82,10.82],
 btSeries:[10000,10120,9980,10250,10400,10330,10560,10720,10680,10910,11050,11240,11180,11420,11600,11550,11820,12010,12180,12260,12440,12610,12780,13800],
-allocation:[{token:"USDT",pct:40},{token:"BNB",pct:32},{token:"CAKE",pct:18},{token:"ETH",pct:10}],
+allocation:[{token:"BNB",pct:76},{token:"USDT",pct:22},{token:"USDC",pct:2}],
 risk:{drawdownUsed:17,exposure:55,dailyTradesUsed:15},
-positions:[{token:"BNB",side:"BUY",size:14,entry:"612.40",mark:"628.10",pnl:2.6},{token:"CAKE",side:"BUY",size:8,entry:"2.41",mark:"2.50",pnl:3.7},{token:"ETH",side:"SELL",size:6,entry:"3180",mark:"3155",pnl:0.8}],
-trades:[{time:"14:02",token:"CAKE",side:"BUY",size:8,price:"2.41"},{time:"13:40",token:"BNB",side:"BUY",size:6,price:"612.40"},{time:"12:55",token:"ETH",side:"SELL",size:6,price:"3180"}],
+positions:[],
+trades:[],
 signals:[{name:"Fear & Greed",value:"62 (Greed)"},{name:"Trend strength",value:"+0.58"},{name:"Volatility (ann)",value:"47%"},{name:"Funding rate",value:"+0.012%"}],
 reasoning:["Regime classified as TREND (F&G 62, trend +0.58).","Momentum on CAKE confirmed across 1h / 4h.","Sentinel: size within per-trade and drawdown limits.","Proposed BUY 8% -> APPROVE."],
 backtest:{ret:38,maxDd:12,sharpe:2.1,trades:142,winRate:58},
 infra:[{name:"TWAK CLI",ok:true},{name:"CoinMarketCap Hub",ok:true},{name:"LLM Claude",ok:true},{name:"BSC RPC",ok:true},{name:"x402 Metering",ok:true},{name:"Vector Memory",ok:true}],
-events:[{time:"14:02",msg:"Trade executed BUY CAKE 8%"},{time:"14:00",msg:"Sentinel APPROVE within limits"},{time:"13:30",msg:"Regime to TREND"},{time:"12:10",msg:"Heartbeat all systems OK"}]
+events:[{time:"live",msg:"Sentinel RESIZE: CAKE BUY -> 3% (vol-targeted)"},{time:"live",msg:"Regime TREND (F&G 62, trend +0.58)"},{time:"live",msg:"x402 BTC feed online"},{time:"live",msg:"Heartbeat - all systems OK"}]
 };
 const $=id=>document.getElementById(id);
 const fmt=n=>Number(n).toLocaleString("en-US");
@@ -21,7 +21,7 @@ function kpiCard(k){return `<div class="card kpi"><div class="k">${k[0]}</div><d
 function render(s){
 $("tk-equity").textContent=fmt(s.equity);
 const pn=$("tk-pnl");pn.textContent=(s.pnlValue>=0?"+":"")+fmt(s.pnlValue);pn.className=s.pnlValue>=0?"pos":"neg";
-$("kpis").innerHTML=[["Equity",fmt(s.equity),""],["PnL Today",(s.pnlPct>=0?"+":"")+s.pnlPct+"%",s.pnlPct>=0?"pos":"neg"],["Drawdown",s.drawdown+"%",""],["Win Rate",s.winRate+"%",""],["Sharpe",s.sharpe,""],["Trades",s.tradesToday,""]].map(kpiCard).join("");
+$("kpis").innerHTML=[["Equity",fmt(s.equity),""],["PnL Today",(s.pnlPct>=0?"+":"")+s.pnlPct+"%",s.pnlPct>=0?"pos":"neg"],["Drawdown",s.drawdown+"%",""],["Regime",s.regime,""],["Exposure",s.risk.exposure+"%",""],["Trades",s.tradesToday,""]].map(kpiCard).join("");
 $("dToken").textContent=s.decision.token;
 const sd=$("dSide");sd.textContent=s.decision.side;sd.className=s.decision.side==="BUY"?"buy":"sell";
 $("dSize").textContent=s.decision.size+" %";$("dConf").textContent=s.decision.confidence+" %";
@@ -75,3 +75,7 @@ boot();
     });
   }).catch(function(e){});
 })();
+
+
+/* honest empty-state placeholders */
+setTimeout(function(){var pb=document.getElementById("positionsBody");if(pb&&!pb.innerHTML.trim())pb.innerHTML='<tr><td colspan="6" style="opacity:.55;padding:14px">No live positions yet</td></tr>';var tr=document.getElementById("trades");if(tr&&!tr.innerHTML.trim())tr.innerHTML='<div class="it" style="opacity:.55">No live trades yet</div>';},700);
