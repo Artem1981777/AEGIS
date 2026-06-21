@@ -32,6 +32,14 @@ def wallet_equity(address=None):
         total += _usd(["--address", addr, "--token", c])
     return round(total, 2)
 
+def stable_balance(symbol, address=None):
+    addr = address or WALLET
+    tok = STABLES.get(symbol)
+    if not tok:
+        return 0.0
+    return _usd(["--address", addr, "--token", tok])
+
+
 def _read():
     try:
         with open(_PEAK_FILE) as f:

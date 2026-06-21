@@ -4,7 +4,7 @@
 import os
 
 from src.chain import twak_swap
-from src.chain.portfolio import live_portfolio_state, baseline_equity
+from src.chain.portfolio import live_portfolio_state, baseline_equity, stable_balance
 try:
     from src.tools import safe_allowance
 except Exception:
@@ -47,6 +47,10 @@ def _execute_raw(decision, live=False):
         token_amt = _token_out(twak_swap.quote(amount, "BNB", token))
         if not token_amt:
             return {"executed": False, "reason": "no sell quote", "side": side}
+        avail = stable_balance(token)
+        token_amt = round(min(token_amt, avail * 0.9), 6)
+        if token_amt < 0.3:
+            return {"executed": False, "reason": "insufficient %s balance (have %.4f)" % (token, avail), "side": side}
         res = twak_swap.execute(token_amt, token, "BNB") if live else twak_swap.quote(token_amt, token, "BNB")
         pair = token + "->BNB"
     else:
