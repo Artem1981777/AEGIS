@@ -43,16 +43,18 @@ def _execute_raw(decision, live=False):
         return {"executed": False, "reason": "blocked by risk: " + str(verdict)}
     amount = _amount_for(decision)
     token = TRADE_TOKEN
+    fallback = False
     if side == "SELL":
-        token_amt = _token_out(twak_swap.quote(amount, "BNB", token))
-        if not token_amt:
-            return {"executed": False, "reason": "no sell quote", "side": side}
+        q = _token_out(twak_swap.quote(amount, "BNB", token))
         avail = stable_balance(token)
-        token_amt = round(min(token_amt, avail * 0.9), 6)
-        if token_amt < 0.3:
-            return {"executed": False, "reason": "insufficient %s balance (have %.4f)" % (token, avail), "side": side}
-        res = twak_swap.execute(token_amt, token, "BNB") if live else twak_swap.quote(token_amt, token, "BNB")
-        pair = token + "->BNB"
+        sell_amt = round(min(q or 0.0, avail * 0.5), 6)
+        if q and sell_amt >= 0.3:
+            res = twak_swap.execute(sell_amt, token, "BNB") if live else twak_swap.quote(sell_amt, token, "BNB")
+            pair = token + "->BNB"
+        else:
+            fallback = True  # not enough USDT to SELL: keep daily activity + replenish USDT
+            res = twak_swap.execute(amount, "BNB", token) if live else twak_swap.quote(amount, "BNB", token)
+            pair = "BNB->" + token
     else:
         res = twak_swap.execute(amount, "BNB", token) if live else twak_swap.quote(amount, "BNB", token)
         pair = "BNB->" + token
@@ -62,6 +64,7 @@ def _execute_raw(decision, live=False):
     res["pair"] = pair
     res["amount_bnb"] = amount
     res["intended_token"] = decision.get("token")
+    res["fallback_rebalance"] = fallback
     return res
 
 
