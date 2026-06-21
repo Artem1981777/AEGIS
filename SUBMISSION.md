@@ -27,6 +27,7 @@ The intelligence proposes; the guardrail disposes. The Sentinel can always overr
 2. Verifiable autonomy. The agent carries an on-chain identity via the BNB AI Agent SDK and ERC-8004 (agentId 1282). Every decision — regime, signals, Sentinel verdict, transaction — is logged and auditable on bscscan.
 3. Full BNB partner stack. CoinMarketCap signals, Trust Wallet TWAK execution, and BNB AI Agent SDK identity — qualifying across Track 1, Track 2, and all three special prizes.
 4. Live and transparent. The agent runs daily on GitHub Actions and publishes a public dashboard with an explainable decision log.
+5. Guaranteed daily activity. A SELL->BUY fallback with automatic USDT replenishment ensures at least one on-chain trade every day, satisfying the competition minimum-trade rule even when one leg is unfunded, and without breaching the Sentinel or the on-chain treasury cap.
 
 ## Architecture
 ~~~
@@ -55,7 +56,7 @@ BNB Chain mainnet (chain 56), Trust Wallet TWAK CLI, CoinMarketCap API, ERC-8004
 
 ## Proof and links
 - Repository: github.com/Artem1981777/AEGIS
-- Live dashboard: aegis-delta-nine.vercel.app
+- Live dashboard: https://aegis-artem7.vercel.app
 - Sample mainnet swap: 0x353002534fef60e1a1272aafdb79b6601fb3164329133ebdb0591cbd8bc9f4cd (0.003 BNB to 1.8163 USDT)
 - Risk Sentinel demo: scripts/sentinel_demo.py with proof artifact dashboard/sentinel_demo.json
 

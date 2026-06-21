@@ -102,6 +102,6 @@ if __name__ == "__main__":
     live = "--live" in sys.argv
     sig = None  # live CMC signals via resolve_signals(token)
     port = live_portfolio_state()
-    out = decide_and_execute(sig, "CAKE", port, live=live)
+    out = decide_and_execute(sig, "BNB", port, live=live)
     print("verdict:", out["verdict"], "| side:", out["side"], "| size:", out["final_size_pct"])
     print("execution:", out["execution"])
