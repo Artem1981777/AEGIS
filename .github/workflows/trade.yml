@@ -29,6 +29,7 @@ jobs:
           TWAK_HMAC_SECRET: ${{ secrets.TWAK_HMAC_SECRET }} 
           TWAK_WALLET_PASSWORD: ${{ secrets.TWAK_WALLET_PASSWORD }} 
           CMC_API_KEY: ${{ secrets.CMC_API_KEY }} 
+          DELEGATE_PRIVATE_KEY: ${{ secrets.DELEGATE_PRIVATE_KEY }}
           TRADE_TOKEN: USDT
           TRADE_NOTIONAL_BNB: "0.05"
           MIN_TRADE_BNB: "0.005"
