@@ -1,0 +1,44 @@
+name: AEGIS Rebalance
+on:
+  workflow_dispatch:
+    inputs:
+      amount:
+        description: "BNB amount to swap to USDT"
+        required: false
+        default: "0.016"
+jobs:
+  rebalance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install Python deps
+        run: pip install -r requirements.txt
+      - name: Install TWAK CLI
+        run: npm install -g @trustwallet/cli
+      - name: Restore wallet
+        env:
+          WALLET_JSON_B64: ${{ secrets.WALLET_JSON_B64 }}
+        run: |
+          mkdir -p ~/.twak
+          echo "$WALLET_JSON_B64" | base64 -d > ~/.twak/wallet.json
+          chmod 600 ~/.twak/wallet.json
+      - name: Rebalance BNB -> USDT
+        env:
+          TWAK_ACCESS_ID: ${{ secrets.TWAK_ACCESS_ID }}
+          TWAK_HMAC_SECRET: ${{ secrets.TWAK_HMAC_SECRET }}
+          TWAK_WALLET_PASSWORD: ${{ secrets.TWAK_WALLET_PASSWORD }}
+          REBAL_AMOUNT: ${{ github.event.inputs.amount }}
+        run: |
+          PYTHONPATH=. python - <<'PY'
+          import os, json
+          from src.chain import twak_swap
+          amt = float(os.getenv("REBAL_AMOUNT") or "0.016")
+          print("Rebalancing", amt, "BNB -> USDT")
+          res = twak_swap.execute(amt, "BNB", "USDT")
+          print(json.dumps(res, indent=2)[:2000])
+          print("RESULT_OK" if res.get("ok") else "RESULT_FAILED")
+          PY
