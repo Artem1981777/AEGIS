@@ -3,7 +3,7 @@ on:
   schedule:
     - cron: "0 9 * * *"
     - cron: "23 10 * * *"
-    - cron: "37 13 * * *"
+    - cron: "0 12 * * *"
   workflow_dispatch:
 jobs:
   trade:
