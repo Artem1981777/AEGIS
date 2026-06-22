@@ -109,3 +109,11 @@ AEGIS is autonomous but **cannot drain its treasury**:
 | Delegate (agent) | `0xBeaF9e2B5a63C338FD79cEd8bB2C2d58dA0deAe3` |
 
 Live guarded transfer proof: `0x9dcff0bf…c671` (BscScan). Full details in `SUBMISSION.md`.
+
+## 🟢 Live Autonomous Run Log
+
+Verified scheduler-triggered trades on BNB Chain mainnet (no manual action):
+
+| Date | Trigger | Side | Swap | Fallback | Tx | Status |
+|---|---|---|---|---|---|---|
+| 2026-06-22 | schedule (auto) | SELL | 0.00532 BNB → 3.153961076926417368 USDT | True | [0x58745616…](https://bscscan.com/tx/0x58745616e7a5641b120c9fb5d769f7a9355d6dfa0ba08205d2a249b595f44de9) | success |
