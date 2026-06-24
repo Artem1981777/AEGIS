@@ -117,3 +117,4 @@ Verified scheduler-triggered trades on BNB Chain mainnet (no manual action):
 | Date | Trigger | Side | Swap | Fallback | Tx | Status |
 |---|---|---|---|---|---|---|
 | 2026-06-22 | schedule (auto) | SELL | 0.00532 BNB → 3.153961076926417368 USDT | True | [0x58745616…](https://bscscan.com/tx/0x58745616e7a5641b120c9fb5d769f7a9355d6dfa0ba08205d2a249b595f44de9) | success |
+| 2026-06-23 | schedule (auto) | SELL | 1.75→0.003047327384720807 | False | [0xd45bb5e9…](https://bscscan.com/tx/0xd45bb5e96b42cb91b6a241a97778f879d352cdaab62123beda73399394b705f4) | ✅ success |
